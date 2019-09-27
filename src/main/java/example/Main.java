@@ -19,17 +19,6 @@ public class Main {
 
 		return JsonWriter.objectToJson(la);
 		
-		// JsonArray arrBuilder = Json.createArrayBuilder().build();
-
-		/*
-		
-		for (Person person : la) {
-			arrBuilder.add(person.toJson());
-		}
-		
-		return arrBuilder.build().toString();
-		*/
 	});
-        get("/hello", (req, res) -> "Hello World");
     }
 } 
