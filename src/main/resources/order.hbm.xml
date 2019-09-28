@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <!DOCTYPE hibernate-mapping PUBLIC
+                "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+                "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+<class name="entity.Order" table="orders">
+    <id name="id" column="id" type="java.lang.Long">
+        <generator class="increment"/>
+    </id>
+    <property name="status" column="status" type="entity.Status"/>
+    <property name="username" column="username" type="java.lang.String"/>
+    <set name="items" table="order_item" cascade="all">
+        <key column="order_id" not-null="true" />
+        <many-to-many column="item_id" class="entity.Item" unique="true"/>
+    </set>
+</class>
+</hibernate-mapping>
