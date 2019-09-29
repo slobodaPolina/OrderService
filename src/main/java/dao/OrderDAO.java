@@ -27,4 +27,12 @@ public class OrderDAO {
 		}
 		return orders.stream().map(order -> new OrderDTO(order)).collect(Collectors.toList());
 	}
+
+	public OrderDTO createOrder() {
+		return null;
+	}
+
+	public OrderDTO getOrderById(long orderId) {
+		return null;
+	}
 }

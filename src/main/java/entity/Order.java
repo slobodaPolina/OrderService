@@ -10,11 +10,11 @@ public class Order {
 	private List<Item> items;
 
 	public long calculateTotalCost() {
-		return 0; // TODO
+		return items.stream().map(item -> item.getAmount() * item.getPrice()).reduce((long) 0, (a, b) -> a + b);
 	}
 
 	public long calculateTotalAmount() {
-		return 0; //TODO
+		return items.stream().map(item -> item.getAmount()).reduce((long) 0, (a, b) -> a + b);
 	}
 
 	public long getId() {
