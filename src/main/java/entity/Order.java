@@ -1,22 +1,12 @@
 package entity;
 
-import javax.persistence.*;
 import java.util.List;
 
-@Entity
-@Table(name="orders")
 public class Order {
-	@Id
-	@Column(name="id")
+
 	private long id;
-
-	@Column(name="status")
 	private Status status;
-
-	@Column(name="username")
 	private String username;
-
-	// TODO annotate to get items of ids and amounts
 	private List<Item> items;
 
 	public long calculateTotalCost() {
@@ -25,7 +15,7 @@ public class Order {
 
 	public long calculateTotalAmount() {
 		return 0; //TODO
-	};
+	}
 
 	public long getId() {
 		return id;

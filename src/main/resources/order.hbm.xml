@@ -9,7 +9,7 @@
     </id>
     <property name="status" column="status" type="entity.Status"/>
     <property name="username" column="username" type="java.lang.String"/>
-    <set name="items" table="order_item" cascade="all">
+    <set name="items" table="orders_items" cascade="all">
         <key column="order_id" not-null="true" />
         <many-to-many column="item_id" class="entity.Item" unique="true"/>
     </set>
