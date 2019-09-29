@@ -7,7 +7,12 @@
     <id name="id" column="id" type="java.lang.Long">
         <generator class="increment"/>
     </id>
-    <property name="status" column="status" type="entity.Status"/>
+    <property name="status" column="status">
+        <type name="org.hibernate.type.EnumType">
+            <param name="enumClass">entity.Status</param>
+            <param name="useNamed">true</param>
+        </type>
+    </property>
     <property name="username" column="username" type="java.lang.String"/>
     <set name="items" table="orders_items" cascade="all">
         <key column="order_id" not-null="true" />

@@ -11,11 +11,13 @@ import java.util.stream.Collectors;
 public class OrderDAO {
 	private SessionFactoryService sfService = new SessionFactoryService();
 
-	public void save(Object obj) {
+	public void save(Order obj) {
 		Session session = null;
 		try {
 			session = sfService.getOpenedSession();
+			session.beginTransaction();
 			session.save(obj);
+			session.getTransaction().commit();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -28,14 +30,17 @@ public class OrderDAO {
 		List<Order> orders = null;
 		try {
 			session = sfService.getOpenedSession();
+			session.beginTransaction();
 			CriteriaQuery<Order> query = session.getCriteriaBuilder().createQuery(Order.class);
 			query.from(Order.class);
 			orders = session.createQuery(query).getResultList();
+			session.getTransaction().commit();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			sfService.closeSession(session);
 		}
+		System.out.println("ALOOOO I HAVE ORDERs " + orders);
 		return orders.stream().map(order -> new OrderDTO(order)).collect(Collectors.toList());
 	}
 
@@ -44,10 +49,12 @@ public class OrderDAO {
 		Order order = null;
 		try {
 			session = sfService.getOpenedSession();
+			session.beginTransaction();
 			CriteriaQuery<Order> query = session.getCriteriaBuilder().createQuery(Order.class);
 			Root<Order> root = query.from(Order.class);
 			query.select(root).where(root.get("id").in(orderId));
 			order = getSingleResult(session, query);
+			session.getTransaction().commit();
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {

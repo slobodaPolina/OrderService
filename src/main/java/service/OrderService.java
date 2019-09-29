@@ -12,6 +12,7 @@ public class OrderService { // TODO realize the logic
     public OrderDTO createEmptyOrder(String username) {
         Order order = new Order(username);
         orderDAO.save(order);
+        System.out.println("ORDER SERVICE INFO: Created on order for " + username);
         return new OrderDTO(order);
     }
 
