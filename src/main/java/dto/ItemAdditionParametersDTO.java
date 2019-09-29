@@ -1,6 +1,5 @@
 package dto;
 
-
 public class ItemAdditionParametersDTO {
     private long id;
     private long amount;
