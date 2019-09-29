@@ -1,14 +1,22 @@
-package entity;
+package dto;
 
-public class Item {
+import entity.Item;
+
+public class ItemDTO {
     private long id;
     private String name;
     private long price;
     /*
-    here it is amount of elements IN ORDER (NOT IN WAREHOUSE)
-    it is empty until set explicitly
+    amount of items in the order (NOT IN WAREHOUSE)
      */
     private long amount;
+
+    public ItemDTO(Item item) {
+        this.id = item.getId();
+        this.name = item.getName();
+        this.price = item.getPrice();
+        this.amount = item.getAmount();
+    }
 
     public long getId() {
         return id;
