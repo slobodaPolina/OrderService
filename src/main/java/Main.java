@@ -14,7 +14,10 @@ public class Main {
     	port(1809);
 
 		get("/api/orders", (req, res) -> orderDAO.getOrders());
-		post("/api/orders", (req, res) -> orderDAO.createOrder());
+
+		post("/api/orders/:username", (req, res) ->
+			orderService.createEmptyOrder(req.params("username"))
+		);
 
 		get("/api/orders/:orderId", (req, res) ->
 			orderDAO.getOrderById(Long.parseLong(req.params("orderId")))

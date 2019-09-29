@@ -11,6 +11,18 @@ import java.util.stream.Collectors;
 public class OrderDAO {
 	private SessionFactoryService sfService = new SessionFactoryService();
 
+	public void save(Object obj) {
+		Session session = null;
+		try {
+			session = sfService.getOpenedSession();
+			session.save(obj);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			sfService.closeSession(session);
+		}
+	}
+
 	public List<OrderDTO> getOrders() {
 		Session session = null;
 		List<Order> orders = null;
@@ -42,10 +54,6 @@ public class OrderDAO {
 			sfService.closeSession(session);
 		}
 		return order == null ? null : new OrderDTO(order);
-	}
-
-	public OrderDTO createOrder() {
-		return null;
 	}
 
 	private <T> T getSingleResult(Session session, CriteriaQuery<T> query) {
