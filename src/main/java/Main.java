@@ -13,21 +13,21 @@ public class Main {
     public static void main(String[] args) {
     	port(1809);
 
-		get("/orders", (req, res) -> orderDAO.getOrders());
-		post("/orders", (req, res) -> orderDAO.createOrder());
+		get("/api/orders", (req, res) -> orderDAO.getOrders());
+		post("/api/orders", (req, res) -> orderDAO.createOrder());
 
-		get("/orders/:orderId", (req, res) ->
+		get("/api/orders/:orderId", (req, res) ->
 			orderDAO.getOrderById(Long.parseLong(req.params("orderId")))
 		);
 
-		put("/orders/:orderId/status/:status", (req, res) ->
+		put("/api/orders/:orderId/status/:status", (req, res) ->
 			orderService.changeOrderStatus(
 					Long.parseLong(req.params("orderId")),
 					Status.valueOf(req.params("status"))
 			)
 		);
 
-		post("/orders/:orderId/item", (req, res) ->
+		post("/api/orders/:orderId/item", (req, res) ->
 			orderService.addItemToOrder(
 					Long.parseLong(req.params("orderId")),
 					new Gson().fromJson(req.body(), ItemAdditionParametersDTO.class)

@@ -4,7 +4,7 @@ import dto.ItemAdditionParametersDTO;
 import dto.OrderDTO;
 import entity.Status;
 
-public class OrderService {
+public class OrderService { // TODO realize the logic
     public OrderDTO addItemToOrder(long orderId, ItemAdditionParametersDTO itemAdditionParameters) {
         return null;
     }
