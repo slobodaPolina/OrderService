@@ -43,7 +43,7 @@ public class OrderDAO {
 		return orders.stream().map(order -> new OrderDTO(order)).collect(Collectors.toList());
 	}
 
-	public OrderDTO getOrderById(long orderId) {
+	public Order getOrderById(long orderId) {
 		Session session = null;
 		Order order = null;
 		try {
@@ -59,7 +59,7 @@ public class OrderDAO {
 		} finally {
 			sfService.closeSession(session);
 		}
-		return order == null ? null : new OrderDTO(order);
+		return order;
 	}
 
 	private <T> T getSingleResult(Session session, CriteriaQuery<T> query) {

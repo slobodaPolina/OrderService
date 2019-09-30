@@ -24,14 +24,14 @@ public class Main {
 		);
 
 		get("/api/orders/:orderId", (req, res) ->
-			orderDAO.getOrderById(Long.parseLong(req.params("orderId")))
+			orderService.getOrderDTOById(Long.parseLong(req.params("orderId")))
 		);
 
 		put("/api/orders/:orderId/status/:status", (req, res) ->
 			orderService.changeOrderStatus(
-					Long.parseLong(req.params("orderId")),
-					Status.valueOf(req.params("status"))
-			)
+				Long.parseLong(req.params("orderId")),
+				Status.valueOf(req.params("status"))
+				)
 		);
 
 		post("/api/orders/:orderId/item", (req, res) ->
