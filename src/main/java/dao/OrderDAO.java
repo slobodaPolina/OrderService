@@ -40,7 +40,6 @@ public class OrderDAO {
 		} finally {
 			sfService.closeSession(session);
 		}
-		System.out.println("ALOOOO I HAVE ORDERs " + orders);
 		return orders.stream().map(order -> new OrderDTO(order)).collect(Collectors.toList());
 	}
 

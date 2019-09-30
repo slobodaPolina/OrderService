@@ -16,20 +16,15 @@ public class OrderDTO {
     List<ItemDTO> items;
 
     public OrderDTO(Order order) {
-        System.out.println("in constructor");
         this.id = order.getId();
         this.status = order.getStatus();
         this.totalCost = order.calculateTotalCost();
-        System.out.println("tot cost is " + this.totalCost);
         this.totalAmount = order.calculateTotalAmount();
-        System.out.println("tot amo is " + this.totalAmount);
         this.username = order.getUsername();
-        System.out.println("I m OK!! " + order.getItems().isEmpty());
         this.items =  order.getItems().isEmpty() ? new ArrayList() :
                 order.getItems().stream()
                 .map(item -> new ItemDTO(item))
                 .collect(Collectors.toList());
-        System.out.println("I m OK!! " + this.items);
     }
 
     public long getId() {

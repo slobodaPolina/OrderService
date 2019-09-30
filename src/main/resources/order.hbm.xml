@@ -14,7 +14,7 @@
         </type>
     </property>
     <property name="username" column="username" type="java.lang.String"/>
-    <set name="items" table="orders_items" cascade="all">
+    <set name="items" table="orders_items" lazy="false" cascade="all">
         <key column="order_id" not-null="true" />
         <many-to-many column="item_id" class="entity.Item" unique="true"/>
     </set>

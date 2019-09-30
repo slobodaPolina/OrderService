@@ -20,20 +20,7 @@ public class Order {
 	}
 
 	public long calculateTotalCost() {
-		System.out.println("id " + this.id);
-		System.out.println("st " + this.status);
-		System.out.println("un " + this.username);
-		System.out.println("items " + this.items);
-		System.out.println("I am done");
-		if (items.isEmpty()) {
-			return 0;
-		}
-		return items.stream().map(item -> item.getAmount() * item.getPrice()).reduce((long) 0, (a, b) -> a + b);
-
-		/*
-		Function<Item, Long> mapper = item -> item.getAmount() * item.getPrice();
-		System.out.println("ALOOOO");
-		return sumFields(mapper);*/
+		return sumFields(item -> item.getAmount() * item.getPrice());
 	}
 
 	public long calculateTotalAmount() {
@@ -73,7 +60,6 @@ public class Order {
 	}
 
 	private long sumFields(Function<Item, Long> mapper) {
-		System.out.println("HERE " + items);
 		if (items.isEmpty()) {
 			return 0;
 		}
