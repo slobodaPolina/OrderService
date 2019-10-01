@@ -25,6 +25,19 @@ public class OrderDAO {
 		}
 	}
 
+	public void update(Order obj) {
+		Session session = null;
+		try {
+			session = sfService.getOpenedSession();
+			session.beginTransaction();
+			session.update(obj);
+			session.getTransaction().commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			sfService.closeSession(session);
+		}
+	}
 	public List<OrderDTO> getOrders() {
 		Session session = null;
 		List<Order> orders = null;

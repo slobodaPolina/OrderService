@@ -42,6 +42,7 @@ public class OrderService { // TODO realize the logic
             return null;
         }
         order.setStatus(newStatus); //TODO check it works
+        orderDAO.update(order);
         if (newStatus.equals(Status.FAILED) || newStatus.equals(Status.CANCELLED)) {
             order.getItems().stream().forEach(item -> itemService.releaseItems(item.getId(), item.getAmount()));
         }
