@@ -20,7 +20,7 @@ public class Main {
 		get("/api/orders", (req, res) -> orderDAO.getOrders());
 
 		post("/api/orders/:username", (req, res) ->
-			orderService.createEmptyOrder(req.params("username"))
+			orderService.createEmptyOrderDTO(req.params("username"))
 		);
 
 		get("/api/orders/:orderId", (req, res) ->

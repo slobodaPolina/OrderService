@@ -1,33 +1,48 @@
 package service;
 
-import dao.OrderDAO;
-import dto.ItemAdditionParametersDTO;
-import dto.OrderDTO;
-import entity.Order;
-import entity.Status;
+import dao.*;
+import dto.*;
+import entity.*;
 
-public class OrderService { // TODO realize the logic
+public class OrderService {
     private OrderDAO orderDAO = new OrderDAO();
+    private CommonDAO commonDAO = new CommonDAO();
     private ItemService itemService = new ItemService();
 
-    public OrderDTO createEmptyOrder(String username) {
+    public Order createEmptyOrder(String username) {
         Order order = new Order(username);
         orderDAO.save(order);
         System.out.println("ORDER SERVICE INFO: Created on order for " + username);
-        return new OrderDTO(order);
+        return order;
+    }
+
+    public OrderDTO createEmptyOrderDTO(String username) {
+        return new OrderDTO(createEmptyOrder(username));
     }
 
     public OrderDTO getOrderDTOById(long orderId) {
-        Order order = orderDAO.getOrderById(orderId);
+        Order order = commonDAO.getById(orderId, Order.class);
         return order == null ? null : new OrderDTO(order);
     }
 
-    public OrderDTO addItemToOrder(long orderId, ItemAdditionParametersDTO itemAdditionParameters) {
-        return null;
+    public OrderDTO addItemToOrder(Long orderId, ItemAdditionParametersDTO itemAdditionParameters) {
+        if (!itemService.reserveItems(itemAdditionParameters.getId(), itemAdditionParameters.getAmount())) {
+            System.out.println("ORDER SERVICE INFO: Cannot reserve " + itemAdditionParameters.getAmount() + " items with id " + itemAdditionParameters.getId() + " to order " + orderId);
+            return null;
+        }
+        Order order = orderId == null ?
+                createEmptyOrder(itemAdditionParameters.getUsername()) :
+                commonDAO.getById(orderId, Order.class);
+        Item itemToAdd = commonDAO.getById(itemAdditionParameters.getId(), Item.class);
+        itemToAdd.setAmount(itemAdditionParameters.getAmount());
+        order.getItems().add(itemToAdd);
+        orderDAO.update(order);
+        System.out.println("ORDER SERVICE INFO: updated order " + orderId + " added " + itemToAdd.getAmount() + itemToAdd.getName() + " (itemId " + itemToAdd.getId() + ")");
+        return new OrderDTO(order);
     }
 
     public OrderDTO changeOrderStatus(long orderId, Status newStatus) {
-        Order order = orderDAO.getOrderById(orderId);
+        Order order = commonDAO.getById(orderId, Order.class);
         if (order == null) {
             return null;
         }
@@ -41,8 +56,9 @@ public class OrderService { // TODO realize the logic
             System.out.println("ORDER SERVICE INFO: Cannot change state from " + order.getStatus() + " to " + newStatus);
             return null;
         }
-        order.setStatus(newStatus); //TODO check it works
+        order.setStatus(newStatus);
         orderDAO.update(order);
+        System.out.println("ORDER SERVICE INFO: updated state of order " + orderId + " from " + order.getStatus() + " to " + newStatus);
         if (newStatus.equals(Status.FAILED) || newStatus.equals(Status.CANCELLED)) {
             order.getItems().stream().forEach(item -> itemService.releaseItems(item.getId(), item.getAmount()));
         }

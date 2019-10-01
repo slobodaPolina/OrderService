@@ -11,6 +11,13 @@ public class ItemDTO {
      */
     private long amount;
 
+    public ItemDTO(long id, String name, long price, long amount) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.amount = amount;
+    }
+
     public ItemDTO(Item item) {
         this.id = item.getId();
         this.name = item.getName();

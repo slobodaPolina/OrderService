@@ -1,5 +1,8 @@
 package entity;
 
+import dto.ItemAdditionParametersDTO;
+import dto.ItemDTO;
+
 public class Item {
     private long id;
     private String name;
@@ -9,6 +12,15 @@ public class Item {
     it is empty until set explicitly
      */
     private long amount;
+
+    public Item() {}
+
+    public Item(long id, String name, long price, long amount) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.amount = amount;
+    }
 
     public long getId() {
         return id;
