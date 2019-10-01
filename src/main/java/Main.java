@@ -29,14 +29,21 @@ public class Main {
 			orderService.changeOrderStatus(
 				Long.parseLong(req.params("orderId")),
 				Status.valueOf(req.params("status"))
-				)
+			)
 		);
 
 		post("/api/orders/:orderId/item", (req, res) ->
 			orderService.addItemToOrder(
-					Long.parseLong(req.params("orderId")),
-					new Gson().fromJson(req.body(), ItemAdditionParametersDTO.class)
+				parseLong(req.params("orderId")),
+				new Gson().fromJson(req.body(), ItemAdditionParametersDTO.class)
 			)
 		);
     }
+
+	private static Long parseLong(String s) {
+		if (s == null || s.equals("") || s.toLowerCase().equals("null")) {
+			return null;
+		}
+		return Long.parseLong(s);
+	}
 }

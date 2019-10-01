@@ -26,18 +26,30 @@ public class OrderService {
     }
 
     public OrderDTO addItemToOrder(Long orderId, ItemAdditionParametersDTO itemAdditionParameters) {
+        Item itemToAdd = commonDAO.getById(itemAdditionParameters.getId(), Item.class);
+        if (itemToAdd == null) {
+            System.out.println("ORDER SERVICE INFO: Cannot add items with id " + itemAdditionParameters.getId() + " - nonexistent!");
+            return null;
+        }
+        Order order = null;
+        if (orderId != null) {
+            order = commonDAO.getById(orderId, Order.class);
+            if(order == null) {
+                System.out.println("ORDER SERVICE INFO: Cannot reserve " + itemAdditionParameters.getAmount() + " items with id " + itemAdditionParameters.getId() + " to order " + orderId + ". Such order does not exist!");
+                return null;
+            }
+        }
         if (!itemService.reserveItems(itemAdditionParameters.getId(), itemAdditionParameters.getAmount())) {
             System.out.println("ORDER SERVICE INFO: Cannot reserve " + itemAdditionParameters.getAmount() + " items with id " + itemAdditionParameters.getId() + " to order " + orderId);
             return null;
         }
-        Order order = orderId == null ?
-                createEmptyOrder(itemAdditionParameters.getUsername()) :
-                commonDAO.getById(orderId, Order.class);
-        Item itemToAdd = commonDAO.getById(itemAdditionParameters.getId(), Item.class);
+        if (orderId == null) {
+            order = createEmptyOrder(itemAdditionParameters.getUsername());
+        }
         itemToAdd.setAmount(itemAdditionParameters.getAmount());
         order.getItems().add(itemToAdd);
         orderDAO.update(order);
-        System.out.println("ORDER SERVICE INFO: updated order " + orderId + " added " + itemToAdd.getAmount() + " " + itemToAdd.getName() + " (itemId " + itemToAdd.getId() + ")");
+        System.out.println("ORDER SERVICE INFO: updated order " + order.getId() + " added " + itemToAdd.getAmount() + " " + itemToAdd.getName() + " (itemId " + itemToAdd.getId() + ")");
         return new OrderDTO(order);
     }
 
