@@ -37,7 +37,7 @@ public class OrderService {
         itemToAdd.setAmount(itemAdditionParameters.getAmount());
         order.getItems().add(itemToAdd);
         orderDAO.update(order);
-        System.out.println("ORDER SERVICE INFO: updated order " + orderId + " added " + itemToAdd.getAmount() + itemToAdd.getName() + " (itemId " + itemToAdd.getId() + ")");
+        System.out.println("ORDER SERVICE INFO: updated order " + orderId + " added " + itemToAdd.getAmount() + " " + itemToAdd.getName() + " (itemId " + itemToAdd.getId() + ")");
         return new OrderDTO(order);
     }
 

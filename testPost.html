@@ -3,9 +3,14 @@
 <head>
     <title>TestPostHere</title>
     <meta charset="utf-8">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 </head>
 <body>
-    <form action="http://185.251.91.187:1809/api/orders/1/status/CANCELLED" method="PUT">
-        <button type="submit">SEND!</button>
+    <form action="http://185.251.91.187:1809/api/orders/1/item">
+        <input name="id" />
+        <input name="amount" />
+        <button></button>
+        <!--<button type="button" onclick="$.ajax({type: 'POST',url: 'http://185.251.91.187:1809/api/orders/1/item',data: '{id: \"1\\", amount: \"14\"}',success: function(){},dataType: 'json',contentType : 'application/json'});">
+            SEND!</button>-->
     </form>
 </body>

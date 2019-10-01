@@ -13,9 +13,7 @@ public class Main {
     public static void main(String[] args) {
     	port(1809);
 
-		exception(Exception.class, (exception, request, response) -> {
-			exception.printStackTrace();
-		});
+		exception(Exception.class, (exception, request, response) -> exception.printStackTrace());
 
 		get("/api/orders", (req, res) -> orderDAO.getOrders());
 
