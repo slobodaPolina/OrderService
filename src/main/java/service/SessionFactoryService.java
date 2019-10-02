@@ -18,7 +18,7 @@ public class SessionFactoryService {
 		}
 	}
 
-	public static SessionFactory getSessionFactory(){
+	public static SessionFactory getSessionFactory() {
 		return sessionFactory;
 	}
 

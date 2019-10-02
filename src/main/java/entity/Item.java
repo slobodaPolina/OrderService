@@ -1,25 +1,18 @@
 package entity;
 
-import dto.ItemAdditionParametersDTO;
-import dto.ItemDTO;
+import java.io.Serializable;
 
-public class Item {
+public class Item implements Serializable {
     private long id;
     private String name;
     private long price;
-    /*
-    here it is amount of elements IN ORDER (NOT IN WAREHOUSE)
-    it is empty until set explicitly
-     */
-    private long amount;
 
     public Item() {}
 
-    public Item(long id, String name, long price, long amount) {
+    public Item(long id, String name, long price) {
         this.id = id;
         this.name = name;
         this.price = price;
-        this.amount = amount;
     }
 
     public long getId() {
@@ -44,13 +37,5 @@ public class Item {
 
     public void setPrice(long price) {
         this.price = price;
-    }
-
-    public long getAmount() {
-        return amount;
-    }
-
-    public void setAmount(long amount) {
-        this.amount = amount;
     }
 }

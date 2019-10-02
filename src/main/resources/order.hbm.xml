@@ -3,20 +3,22 @@
                 "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
                 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
-<class name="entity.Order" table="orders" dynamic-update="true">
-    <id name="id" column="id" type="java.lang.Long">
-        <generator class="increment"/>
-    </id>
-    <property name="status" column="status">
-        <type name="org.hibernate.type.EnumType">
-            <param name="enumClass">entity.Status</param>
-            <param name="useNamed">true</param>
-        </type>
-    </property>
-    <property name="username" column="username" type="java.lang.String"/>
-    <set name="items" table="orders_items" lazy="false" cascade="all">
-        <key column="order_id" not-null="true" />
-        <many-to-many column="item_id" class="entity.Item" unique="true"/>
-    </set>
-</class>
+    <class entity-name="order" name="entity.Order" table="orders" dynamic-update="true">
+        <id name="id" column="id" type="java.lang.Long">
+            <generator class="increment" />
+        </id>
+        <property name="status" column="status">
+            <type name="org.hibernate.type.EnumType">
+                <param name="enumClass">entity.Status</param>
+                <param name="useNamed">true</param>
+            </type>
+        </property>
+        <property name="username" column="username" type="java.lang.String"/>
+        <set name="orderItems" table="orders_items" lazy="false" access="field" fetch="select" cascade="all">
+            <key>
+                <column name="order_id" not-null="true" />
+            </key>
+            <one-to-many entity-name="orderItem"/>
+        </set>
+    </class>
 </hibernate-mapping>

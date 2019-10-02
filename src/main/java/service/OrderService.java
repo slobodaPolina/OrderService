@@ -35,21 +35,29 @@ public class OrderService {
         if (orderId != null) {
             order = commonDAO.getById(orderId, Order.class);
             if(order == null) {
-                System.out.println("ORDER SERVICE INFO: Cannot reserve " + itemAdditionParameters.getAmount() + " items with id " + itemAdditionParameters.getId() + " to order " + orderId + ". Such order does not exist!");
+                System.out.println(
+                        "ORDER SERVICE INFO: Cannot reserve " + itemAdditionParameters.getAmount() + " items with id " +
+                                itemAdditionParameters.getId() + " to order " + orderId + ". Such order does not exist!"
+                );
                 return null;
             }
         }
         if (!itemService.reserveItems(itemAdditionParameters.getId(), itemAdditionParameters.getAmount())) {
-            System.out.println("ORDER SERVICE INFO: Cannot reserve " + itemAdditionParameters.getAmount() + " items with id " + itemAdditionParameters.getId() + " to order " + orderId);
+            System.out.println(
+                    "ORDER SERVICE INFO: Cannot reserve " + itemAdditionParameters.getAmount() + " items with id " +
+                        itemAdditionParameters.getId() + " to order " + orderId
+            );
             return null;
         }
         if (orderId == null) {
             order = createEmptyOrder(itemAdditionParameters.getUsername());
         }
-        itemToAdd.setAmount(itemAdditionParameters.getAmount());
-        order.getItems().add(itemToAdd);
+        order.getOrderItems().add(new OrderItem(order, itemToAdd, itemAdditionParameters.getAmount()));
         orderDAO.update(order);
-        System.out.println("ORDER SERVICE INFO: updated order " + order.getId() + " added " + itemToAdd.getAmount() + " " + itemToAdd.getName() + " (itemId " + itemToAdd.getId() + ")");
+        System.out.println(
+                "ORDER SERVICE INFO: updated order " + order.getId() + " added " + itemAdditionParameters.getAmount() + " " +
+                        itemToAdd.getName() + " (itemId " + itemToAdd.getId() + ")"
+        );
         return new OrderDTO(order);
     }
 
@@ -72,7 +80,9 @@ public class OrderService {
         orderDAO.update(order);
         System.out.println("ORDER SERVICE INFO: updated state of order " + orderId + " from " + order.getStatus() + " to " + newStatus);
         if (newStatus.equals(Status.FAILED) || newStatus.equals(Status.CANCELLED)) {
-            order.getItems().stream().forEach(item -> itemService.releaseItems(item.getId(), item.getAmount()));
+            order.getOrderItems().stream().forEach(
+                    orderItem -> itemService.releaseItems(orderItem.getId().getItem().getId(), orderItem.getAmount())
+            );
         }
         return new OrderDTO(order);
     }

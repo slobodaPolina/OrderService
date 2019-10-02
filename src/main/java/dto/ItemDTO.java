@@ -18,11 +18,15 @@ public class ItemDTO {
         this.amount = amount;
     }
 
-    public ItemDTO(Item item) {
+    public ItemDTO(Item item, long amount) {
         this.id = item.getId();
         this.name = item.getName();
         this.price = item.getPrice();
-        this.amount = item.getAmount();
+        this.amount = amount;
+    }
+
+    public String toString() {
+        return "{id: " + id + ", name: " + name + ", price: " + price + ", amount: " + amount + "}";
     }
 
     public long getId() {

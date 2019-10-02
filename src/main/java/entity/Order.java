@@ -1,30 +1,31 @@
 package entity;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
 
-public class Order {
+public class Order implements Serializable {
 
 	private long id;
 	private Status status;
 	private String username;
-	private Set<Item> items = new HashSet<Item>();
+	private Set<OrderItem> orderItems = new HashSet<OrderItem>();
 
 	public Order() {}
 
 	public Order(String username) {
 		this.username = username;
 		this.status = Status.COLLECTING;
-		this.items = new HashSet<Item>();
+		this.orderItems = new HashSet<OrderItem>();
 	}
 
 	public long calculateTotalCost() {
-		return sumFields(item -> item.getAmount() * item.getPrice());
+		return sumFields(orderItem -> orderItem.getAmount() * orderItem.getId().getItem().getPrice());
 	}
 
 	public long calculateTotalAmount() {
-		return sumFields(item -> item.getAmount());
+		return sumFields(orderItem -> orderItem.getAmount());
 	}
 
 	public long getId() {
@@ -51,18 +52,18 @@ public class Order {
 		this.username = username;
 	}
 
-	public Set<Item> getItems() {
-		return items;
+	public Set<OrderItem> getOrderItems() {
+		return orderItems;
 	}
 
-	public void setItems(Set<Item> items) {
-		this.items = items;
+	public void setOrderItems(Set<OrderItem> orderItems) {
+		this.orderItems = orderItems;
 	}
 
-	private long sumFields(Function<Item, Long> mapper) {
-		if (items.isEmpty()) {
+	private long sumFields(Function<OrderItem, Long> mapper) {
+		if (orderItems.isEmpty()) {
 			return 0;
 		}
-		return items.stream().map(mapper).reduce((long) 0, (a, b) -> a + b);
+		return orderItems.stream().map(mapper).reduce((long) 0, (a, b) -> a + b);
 	}
 } 

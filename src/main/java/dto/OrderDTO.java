@@ -21,10 +21,15 @@ public class OrderDTO {
         this.totalCost = order.calculateTotalCost();
         this.totalAmount = order.calculateTotalAmount();
         this.username = order.getUsername();
-        this.items =  order.getItems().isEmpty() ? new ArrayList() :
-                order.getItems().stream()
-                .map(item -> new ItemDTO(item))
+        this.items =  order.getOrderItems().isEmpty() ? new ArrayList() :
+                order.getOrderItems().stream()
+                .map(orderItem -> new ItemDTO(orderItem.getId().getItem(), orderItem.getAmount()))
                 .collect(Collectors.toList());
+    }
+
+    public String toString() {
+        String itemsStr = items.stream().map(itemDTO -> itemDTO.toString()).collect(Collectors.joining(", "));
+        return "{id: " + id + ", status: " + status + ", username: " + username + ", items: [" + itemsStr + "]}";
     }
 
     public long getId() {
