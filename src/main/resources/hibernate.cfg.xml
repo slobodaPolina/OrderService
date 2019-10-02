@@ -9,9 +9,9 @@
 	    <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/orders</property>
         <property name="hibernate.connection.username">example</property>
         <property name="hibernate.connection.password">example</property>
-        <mapping class="entity.Order" resource="order.hbm.xml"/>
-        <mapping class="entity.Item" resource="item.hbm.xml"/>
-        <mapping class="entity.OrderItem" resource="orderItem.hbm.xml"/>
+        <mapping resource="order.hbm.xml"/>
+        <mapping resource="item.hbm.xml"/>
+        <mapping resource="orderItem.hbm.xml"/>
     </session-factory>
 </hibernate-configuration>
 
