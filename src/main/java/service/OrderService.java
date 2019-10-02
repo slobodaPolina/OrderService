@@ -66,19 +66,20 @@ public class OrderService {
         if (order == null) {
             return null;
         }
-        if ((order.getStatus().equals(Status.COLLECTING) && !(newStatus.equals(Status.FAILED) || newStatus.equals(Status.PAYED))) ||
-                (order.getStatus().equals(Status.PAYED) && !(newStatus.equals(Status.SHIPPING) || newStatus.equals(Status.CANCELLED))) ||
-                (order.getStatus().equals(Status.SHIPPING) && !newStatus.equals(Status.COMPLETE)) ||
-                order.getStatus().equals(Status.FAILED) ||
-                order.getStatus().equals(Status.COMPLETE) ||
-                order.getStatus().equals(Status.CANCELLED)
+        Status oldStatus = order.getStatus();
+        if ((oldStatus.equals(Status.COLLECTING) && !(newStatus.equals(Status.FAILED) || newStatus.equals(Status.PAYED))) ||
+                (oldStatus.equals(Status.PAYED) && !(newStatus.equals(Status.SHIPPING) || newStatus.equals(Status.CANCELLED))) ||
+                (oldStatus.equals(Status.SHIPPING) && !newStatus.equals(Status.COMPLETE)) ||
+                oldStatus.equals(Status.FAILED) ||
+                oldStatus.equals(Status.COMPLETE) ||
+                oldStatus.equals(Status.CANCELLED)
         ) {
-            System.out.println("ORDER SERVICE INFO: Cannot change state from " + order.getStatus() + " to " + newStatus);
+            System.out.println("ORDER SERVICE INFO: Cannot change state from " + oldStatus + " to " + newStatus);
             return null;
         }
         order.setStatus(newStatus);
         orderDAO.update(order);
-        System.out.println("ORDER SERVICE INFO: updated state of order " + orderId + " from " + order.getStatus() + " to " + newStatus);
+        System.out.println("ORDER SERVICE INFO: updated state of order " + orderId + " from " + oldStatus + " to " + newStatus);
         if (newStatus.equals(Status.FAILED) || newStatus.equals(Status.CANCELLED)) {
             order.getOrderItems().stream().forEach(
                     orderItem -> itemService.releaseItems(orderItem.getId().getItem().getId(), orderItem.getAmount())
