@@ -2,7 +2,7 @@ import static spark.Spark.*;
 
 import com.google.gson.Gson;
 import dao.OrderDAO;
-import dto.ItemAdditionParametersDTO;
+import dto.*;
 import entity.Status;
 import service.OrderService;
 
@@ -13,12 +13,10 @@ public class Main {
     public static void main(String[] args) {
     	port(1809);
 
-		exception(Exception.class, (exception, request, response) -> exception.printStackTrace());
-
 		get("/api/orders", (req, res) -> orderDAO.getOrders());
 
 		post("/api/orders/:username", (req, res) ->
-			orderService.createEmptyOrderDTO(req.params("username"))
+				new OrderDTO(orderService.createEmptyOrder(req.params("username")))
 		);
 
 		get("/api/orders/:orderId", (req, res) ->
