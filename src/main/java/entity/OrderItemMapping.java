@@ -8,7 +8,7 @@ public class OrderItemMapping implements Serializable {
 
     public OrderItemMapping() {}
 
-    public OrderItemMapping(Order order, Item item) {
+    OrderItemMapping(Order order, Item item) {
         this.order = order;
         this.item = item;
     }
@@ -53,10 +53,7 @@ public class OrderItemMapping implements Serializable {
         } else if (!item.equals(other.item))
             return false;
         if (order == null) {
-            if (other.order != null)
-                return false;
-        } else if (!order.equals(other.order))
-            return false;
-        return true;
+            return other.order == null;
+        } else return order.equals(other.order);
     }
 }

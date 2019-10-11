@@ -1,21 +1,22 @@
 package service;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ItemService {
+    private Logger logger;
+    public ItemService(Logger logger) {
+        this.logger = logger;
+    }
 
-    static Logger LOGGER = LoggerFactory.getLogger(OrderService.class);
-
-    public boolean reserveItems(long itemId, long amount) {
+    boolean reserveItems(long itemId, long amount) {
         //call real ItemService here, if it is ok...
-        LOGGER.info("Reserved " + amount + " items with id " + itemId);
+        logger.info("Reserved " + amount + " items with id " + itemId);
         return true;
     }
 
-    public boolean releaseItems(long itemId, long amount) {
+    boolean releaseItems(long itemId, long amount) {
         //call real ItemService here
-       LOGGER.info("Released " + amount + " items with id " + itemId);
+       logger.info("Released " + amount + " items with id " + itemId);
         return true;
     }
 }

@@ -13,7 +13,7 @@ public class OrderDTO {
     private long totalCost;
     private long totalAmount;
     private String username;
-    List<ItemDTO> items;
+    private List<ItemDTO> items;
 
     public OrderDTO(Order order) {
         this.id = order.getId();
@@ -21,14 +21,14 @@ public class OrderDTO {
         this.totalCost = order.calculateTotalCost();
         this.totalAmount = order.calculateTotalAmount();
         this.username = order.getUsername();
-        this.items =  order.getOrderItems().isEmpty() ? new ArrayList() :
+        this.items =  order.getOrderItems().isEmpty() ? new ArrayList<>() :
                 order.getOrderItems().stream()
                 .map(orderItem -> new ItemDTO(orderItem.getId().getItem(), orderItem.getAmount()))
                 .collect(Collectors.toList());
     }
 
     public String toString() {
-        String itemsStr = items.stream().map(itemDTO -> itemDTO.toString()).collect(Collectors.joining(", "));
+        String itemsStr = items.stream().map(ItemDTO::toString).collect(Collectors.joining(", "));
         return "{id: " + id + ", status: " + status + ", username: " + username + ", items: [" + itemsStr + "]}";
     }
 

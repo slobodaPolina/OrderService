@@ -9,7 +9,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class OrderDAO {
-	private SessionFactoryService sfService = new SessionFactoryService();
+	private SessionFactoryService sfService;
+
+	public OrderDAO(SessionFactoryService sfService) {
+		this.sfService = sfService;
+	}
 
 	public void save(Order obj) {
 		Session session = null;
@@ -54,6 +58,6 @@ public class OrderDAO {
 		} finally {
 			sfService.closeSession(session);
 		}
-		return orders.stream().map(order -> new OrderDTO(order)).collect(Collectors.toList());
+		return orders.stream().map(OrderDTO::new).collect(Collectors.toList());
 	}
 }

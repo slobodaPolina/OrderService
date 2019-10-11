@@ -10,14 +10,14 @@ public class Order implements Serializable {
 	private long id;
 	private Status status;
 	private String username;
-	private Set<OrderItem> orderItems = new HashSet<OrderItem>();
+	private Set<OrderItem> orderItems = new HashSet<>();
 
 	public Order() {}
 
 	public Order(String username) {
 		this.username = username;
 		this.status = Status.COLLECTING;
-		this.orderItems = new HashSet<OrderItem>();
+		this.orderItems = new HashSet<>();
 	}
 
 	public long calculateTotalCost() {
@@ -25,7 +25,7 @@ public class Order implements Serializable {
 	}
 
 	public long calculateTotalAmount() {
-		return sumFields(orderItem -> orderItem.getAmount());
+		return sumFields(OrderItem::getAmount);
 	}
 
 	public long getId() {

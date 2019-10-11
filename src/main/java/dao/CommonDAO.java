@@ -1,7 +1,5 @@
 package dao;
 
-import entity.Item;
-import entity.Order;
 import org.hibernate.Session;
 import service.SessionFactoryService;
 
@@ -10,8 +8,13 @@ import javax.persistence.criteria.Root;
 import java.util.List;
 
 public class CommonDAO {
+    private SessionFactoryService sfService;
+
+    public CommonDAO(SessionFactoryService sfService) {
+        this.sfService = sfService;
+    }
+
     public <T> T getById(long id, Class<T> clazz) {
-        SessionFactoryService sfService = new SessionFactoryService();
         Session session = null;
         T t = null;
         try {

@@ -7,14 +7,6 @@ public class Item implements Serializable {
     private String name;
     private long price;
 
-    public Item() {}
-
-    public Item(long id, String name, long price) {
-        this.id = id;
-        this.name = name;
-        this.price = price;
-    }
-
     public long getId() {
         return id;
     }

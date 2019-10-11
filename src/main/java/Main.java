@@ -1,19 +1,27 @@
 import static spark.Spark.*;
 
 import com.google.gson.Gson;
+import dao.CommonDAO;
 import dao.OrderDAO;
 import dto.*;
 import entity.Status;
+import org.slf4j.LoggerFactory;
+import service.ItemService;
 import service.OrderService;
+import service.SessionFactoryService;
 
 public class Main {
-	private static OrderDAO orderDAO = new OrderDAO();
-	private static OrderService orderService = new OrderService();
+	private static OrderService orderService = new OrderService(
+			new OrderDAO(new SessionFactoryService()),
+			new CommonDAO(new SessionFactoryService()),
+			new ItemService(LoggerFactory.getLogger(OrderService.class)),
+			LoggerFactory.getLogger(OrderService.class)
+	);
 
     public static void main(String[] args) {
     	port(1809);
 
-		get("/api/orders", (req, res) -> orderDAO.getOrders());
+		get("/api/orders", (req, res) -> orderService.getOrders());
 
 		post("/api/orders/:username", (req, res) ->
 				new OrderDTO(orderService.createEmptyOrder(req.params("username")))

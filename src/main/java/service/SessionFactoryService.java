@@ -4,8 +4,6 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
-import javax.persistence.criteria.CriteriaQuery;
-
 public class SessionFactoryService {
 	private static SessionFactory sessionFactory;
 	static {
@@ -18,7 +16,7 @@ public class SessionFactoryService {
 		}
 	}
 
-	public static SessionFactory getSessionFactory() {
+	private static SessionFactory getSessionFactory() {
 		return sessionFactory;
 	}
 
