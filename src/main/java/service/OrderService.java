@@ -72,13 +72,7 @@ public class OrderService {
             throw new NoSuchElementException();
         }
         Status oldStatus = order.getStatus();
-        if ((oldStatus.equals(Status.COLLECTING) && !(newStatus.equals(Status.FAILED) || newStatus.equals(Status.PAYED))) ||
-                (oldStatus.equals(Status.PAYED) && !(newStatus.equals(Status.SHIPPING) || newStatus.equals(Status.CANCELLED))) ||
-                (oldStatus.equals(Status.SHIPPING) && !newStatus.equals(Status.COMPLETE)) ||
-                oldStatus.equals(Status.FAILED) ||
-                oldStatus.equals(Status.COMPLETE) ||
-                oldStatus.equals(Status.CANCELLED)
-        ) {
+        if (!oldStatus.nextStatus().contains(newStatus)) {
             LOGGER.error("Cannot change state from " + oldStatus + " to " + newStatus + " for the order " + orderId);
             throw new RuntimeException("Cannot change status");
         }
