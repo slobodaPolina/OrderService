@@ -16,18 +16,8 @@ public class SessionFactoryService {
 		}
 	}
 
-	private static SessionFactory getSessionFactory() {
+	public static SessionFactory getSessionFactory() {
 		return sessionFactory;
-	}
-
-	public Session getOpenedSession() {
-		return getSessionFactory().openSession();
-	}
-
-	public void closeSession(Session session) {
-		if (session != null && session.isOpen()) {
-			session.close();
-		}
 	}
 }
 

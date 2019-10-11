@@ -12,8 +12,8 @@ import service.SessionFactoryService;
 
 public class Main {
 	private static OrderService orderService = new OrderService(
-			new OrderDAO(new SessionFactoryService()),
-			new CommonDAO(new SessionFactoryService()),
+			new OrderDAO(),
+			new CommonDAO(),
 			new ItemService(LoggerFactory.getLogger(OrderService.class)),
 			LoggerFactory.getLogger(OrderService.class)
 	);

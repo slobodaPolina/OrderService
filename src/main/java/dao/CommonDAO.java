@@ -8,17 +8,9 @@ import javax.persistence.criteria.Root;
 import java.util.List;
 
 public class CommonDAO {
-    private SessionFactoryService sfService;
-
-    public CommonDAO(SessionFactoryService sfService) {
-        this.sfService = sfService;
-    }
-
     public <T> T getById(long id, Class<T> clazz) {
-        Session session = null;
         T t = null;
-        try {
-            session = sfService.getOpenedSession();
+        try (Session session = SessionFactoryService.getSessionFactory().openSession()) {
             session.beginTransaction();
             CriteriaQuery<T> query = session.getCriteriaBuilder().createQuery(clazz);
             Root<T> root = query.from(clazz);
@@ -28,8 +20,6 @@ public class CommonDAO {
             session.getTransaction().commit();
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            sfService.closeSession(session);
         }
         return t;
     }

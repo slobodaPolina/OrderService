@@ -9,45 +9,29 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class OrderDAO {
-	private SessionFactoryService sfService;
-
-	public OrderDAO(SessionFactoryService sfService) {
-		this.sfService = sfService;
-	}
-
 	public void save(Order obj) {
-		Session session = null;
-		try {
-			session = sfService.getOpenedSession();
+		try (Session session = SessionFactoryService.getSessionFactory().openSession()) {
 			session.beginTransaction();
 			session.save(obj);
 			session.getTransaction().commit();
 		} catch (Exception e) {
 			e.printStackTrace();
-		} finally {
-			sfService.closeSession(session);
 		}
 	}
 
 	public void update(Order obj) {
-		Session session = null;
-		try {
-			session = sfService.getOpenedSession();
+		try (Session session = SessionFactoryService.getSessionFactory().openSession()) {
 			session.beginTransaction();
 			session.update(obj);
 			session.getTransaction().commit();
 		} catch (Exception e) {
 			e.printStackTrace();
-		} finally {
-			sfService.closeSession(session);
 		}
 	}
 
 	public List<OrderDTO> getOrders() {
-		Session session = null;
 		List<Order> orders = null;
-		try {
-			session = sfService.getOpenedSession();
+		try (Session session = SessionFactoryService.getSessionFactory().openSession()) {
 			session.beginTransaction();
 			CriteriaQuery<Order> query = session.getCriteriaBuilder().createQuery(Order.class);
 			query.from(Order.class);
@@ -55,8 +39,6 @@ public class OrderDAO {
 			session.getTransaction().commit();
 		} catch (Exception e) {
 			e.printStackTrace();
-		} finally {
-			sfService.closeSession(session);
 		}
 		return orders.stream().map(OrderDTO::new).collect(Collectors.toList());
 	}
