@@ -1,21 +1,16 @@
 import static spark.Spark.*;
 
 import com.google.gson.Gson;
-import dao.CommonDAO;
-import dao.OrderDAO;
+import dao.*;
 import dto.*;
 import entity.Status;
-import org.slf4j.LoggerFactory;
-import service.ItemService;
-import service.OrderService;
-import service.SessionFactoryService;
+import service.*;
 
 public class Main {
 	private static OrderService orderService = new OrderService(
 			new OrderDAO(),
 			new CommonDAO(),
-			new ItemService(LoggerFactory.getLogger(OrderService.class)),
-			LoggerFactory.getLogger(OrderService.class)
+			new ItemService()
 	);
 
     public static void main(String[] args) {

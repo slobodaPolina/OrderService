@@ -1,12 +1,9 @@
 package service;
 
-import org.slf4j.Logger;
+import org.slf4j.*;
 
 public class ItemService {
-    private Logger logger;
-    public ItemService(Logger logger) {
-        this.logger = logger;
-    }
+    private static final Logger logger = LoggerFactory.getLogger(ItemService.class);
 
     boolean reserveItems(long itemId, long amount) {
         //call real ItemService here, if it is ok...
