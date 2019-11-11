@@ -10,12 +10,10 @@ public class OrderService {
     private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
     private OrderDAO orderDAO;
     private CommonDAO commonDAO;
-    private ItemService itemService;
 
-    public OrderService(OrderDAO orderDAO, CommonDAO commonDAO, ItemService itemService) {
+    public OrderService(OrderDAO orderDAO, CommonDAO commonDAO) {
         this.orderDAO = orderDAO;
         this.commonDAO = commonDAO;
-        this.itemService = itemService;
     }
 
     public List<OrderDTO> getOrders() {
@@ -58,14 +56,16 @@ public class OrderService {
             order = createEmptyOrder(itemAdditionParameters.getUsername());
         }
 
-        if (!itemService.reserveItems(itemAdditionParameters.getId(), itemAdditionParameters.getAmount())) {
+        MessagingService.callItemService(true, itemAdditionParameters.getId(), itemAdditionParameters.getAmount());
+        // what will I do if it has failed?
+        /*if (!MessagingService.callItemService(true, itemAdditionParameters.getId(), itemAdditionParameters.getAmount())) {
             logger.error(
                     "Cannot reserve " + itemAdditionParameters.getAmount() + " items with id " +
                         itemAdditionParameters.getId() + " to order " + orderId + ". ItemService rejected the operation."
             );
             throw new RuntimeException("Cannot reserve " + itemAdditionParameters.getAmount() + " items with id " +
                 itemAdditionParameters.getId() + " to order " + orderId + ". ItemService rejected the operation.");
-        }
+        }*/
 
         order.getOrderItems().add(new OrderItem(order, itemToAdd, itemAdditionParameters.getAmount()));
         orderDAO.update(order);
@@ -92,7 +92,7 @@ public class OrderService {
         logger.info("Updated state of order " + orderId + " from " + oldStatus + " to " + newStatus);
         if (newStatus.equals(Status.FAILED) || newStatus.equals(Status.CANCELLED)) {
             order.getOrderItems().forEach(
-                orderItem -> itemService.releaseItems(orderItem.getId().getItem().getId(), orderItem.getAmount())
+                orderItem -> MessagingService.callItemService(false, orderItem.getId().getItem().getId(), orderItem.getAmount())
             );
         }
         return new OrderDTO(order);

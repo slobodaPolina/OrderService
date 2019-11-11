@@ -14,6 +14,8 @@ public class Main {
 	);
 
     public static void main(String[] args) {
+		MessagingService.setupListener(orderService);
+
     	port(1809);
 
 		get("/api/orders", (req, res) -> orderService.getOrders());
