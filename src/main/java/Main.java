@@ -7,11 +7,7 @@ import entity.Status;
 import service.*;
 
 public class Main {
-	private static OrderService orderService = new OrderService(
-			new OrderDAO(),
-			new CommonDAO(),
-			new ItemService()
-	);
+	private static OrderService orderService = new OrderService(new OrderDAO(), new CommonDAO());
 
     public static void main(String[] args) {
 		MessagingService.setupListener(orderService);

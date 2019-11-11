@@ -4,7 +4,7 @@ public class PayedOrderDTO {
     private long orderId;
     private boolean payed;
 
-    PayedOrderDTO(lonf orderId, boolean payed) {
+    PayedOrderDTO(long orderId, boolean payed) {
         this.orderId = orderId;
         this.payed = payed;
     }
