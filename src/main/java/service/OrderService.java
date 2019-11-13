@@ -56,17 +56,7 @@ public class OrderService {
             order = createEmptyOrder(itemAdditionParameters.getUsername());
         }
 
-        MessagingService.callItemService(true, itemAdditionParameters.getId(), itemAdditionParameters.getAmount());
-        // what will I do if it has failed?
-        /*if (!MessagingService.callItemService(true, itemAdditionParameters.getId(), itemAdditionParameters.getAmount())) {
-            logger.error(
-                    "Cannot reserve " + itemAdditionParameters.getAmount() + " items with id " +
-                        itemAdditionParameters.getId() + " to order " + orderId + ". ItemService rejected the operation."
-            );
-            throw new RuntimeException("Cannot reserve " + itemAdditionParameters.getAmount() + " items with id " +
-                itemAdditionParameters.getId() + " to order " + orderId + ". ItemService rejected the operation.");
-        }*/
-
+        MessagingService.callReserve(itemAdditionParameters.getId(), itemAdditionParameters.getAmount(), order.getId());
         order.getOrderItems().add(new OrderItem(order, itemToAdd, itemAdditionParameters.getAmount()));
         orderDAO.update(order);
         logger.info(
@@ -92,7 +82,7 @@ public class OrderService {
         logger.info("Updated state of order " + orderId + " from " + oldStatus + " to " + newStatus);
         if (newStatus.equals(Status.FAILED) || newStatus.equals(Status.CANCELLED)) {
             order.getOrderItems().forEach(
-                orderItem -> MessagingService.callItemService(false, orderItem.getId().getItem().getId(), orderItem.getAmount())
+                orderItem -> MessagingService.callRelease(orderItem.getId().getItem().getId(), orderItem.getAmount())
             );
         }
         return new OrderDTO(order);

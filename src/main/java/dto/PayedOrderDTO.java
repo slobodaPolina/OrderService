@@ -2,11 +2,11 @@ package dto;
 
 public class PayedOrderDTO {
     private long orderId;
-    private boolean payed;
+    private boolean paymentSuccessful;
 
-    PayedOrderDTO(long orderId, boolean payed) {
+    PayedOrderDTO(long orderId, boolean paymentSuccessful) {
         this.orderId = orderId;
-        this.payed = payed;
+        this.paymentSuccessful = paymentSuccessful;
     }
 
     PayedOrderDTO() {}
@@ -19,11 +19,11 @@ public class PayedOrderDTO {
         this.orderId = orderId;
     }
 
-    public boolean isPayed() {
-        return payed;
+    public boolean isPaymentSuccessful() {
+        return paymentSuccessful;
     }
 
-    public void setPayed(boolean payed) {
-        this.payed = payed;
+    public void setPaymentSuccessful(boolean paymentSuccessful) {
+        this.paymentSuccessful = paymentSuccessful;
     }
 }
