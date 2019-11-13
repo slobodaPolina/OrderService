@@ -83,6 +83,7 @@ public class MessagingService {
             DeliverCallback itemCallback = (consumerTag, delivery) -> {
                 try {
                     String message = new String(delivery.getBody(), "UTF-8");
+                    ReservationFailedDTO dto = new Gson().fromJson(message, ReservationFailedDTO.class);
                     // todo remove from db failed data
                     /*logger.error(
                             "Cannot reserve " + itemAdditionParameters.getAmount() + " items with id " +
