@@ -85,10 +85,10 @@ public class MessagingService {
                     String message = new String(delivery.getBody(), "UTF-8");
                     ReservationFailedDTO dto = new Gson().fromJson(message, ReservationFailedDTO.class);
                     // todo remove from db failed data
-                    /*logger.error(
-                            "Cannot reserve " + itemAdditionParameters.getAmount() + " items with id " +
-                                itemAdditionParameters.getId() + " to order " + orderId + ". ItemService rejected the operation."
-                    );*/
+                    logger.error(
+                            "Cannot reserve " + dto.getAmount() + " items with id " +
+                                dto.getId() + " to order " + dto.getOrderId() + ". ItemService rejected the operation."
+                    );
                 } finally {
                     channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
                 }
