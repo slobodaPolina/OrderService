@@ -6,6 +6,7 @@ import org.slf4j.*;
 import com.google.gson.Gson;
 
 import dto.*;
+import dao.*;
 import entity.*;
 
 public class MessagingService {
@@ -49,7 +50,7 @@ public class MessagingService {
         }
     }
 
-    public static void setupListener(OrderService orderService) {
+    public static void setupListener(OrderService orderService, CommonDAO commonDAO, OrderDAO orderDAO) {
         String queueName = "OrderService";
         String paymentExchangeName = "paymentPerformed";
         String itemExchangeName = "reservationFailed";
@@ -84,10 +85,12 @@ public class MessagingService {
                 try {
                     String message = new String(delivery.getBody(), "UTF-8");
                     ReservationFailedDTO dto = new Gson().fromJson(message, ReservationFailedDTO.class);
-                    // todo remove from db failed data
+                    OrderItem orderItem = orderDAO.getOrderItem(dto.getOrderId(), dto.getItemId());
+                    orderItem.setAmount(orderItem.getAmount() - dto.getAmount());
+                    commonDAO.update(orderItem);
                     logger.error(
                             "Cannot reserve " + dto.getAmount() + " items with id " +
-                                dto.getId() + " to order " + dto.getOrderId() + ". ItemService rejected the operation."
+                                dto.getItemId() + " to order " + dto.getOrderId() + ". ItemService rejected the operation."
                     );
                 } finally {
                     channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);

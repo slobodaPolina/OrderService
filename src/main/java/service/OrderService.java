@@ -22,7 +22,7 @@ public class OrderService {
 
     public Order createEmptyOrder(String username) {
         Order order = new Order(username);
-        orderDAO.save(order);
+        commonDAO.save(order);
         logger.info("Created on order for " + username);
         return order;
     }
@@ -57,8 +57,13 @@ public class OrderService {
         }
 
         MessagingService.callReserve(itemAdditionParameters.getId(), itemAdditionParameters.getAmount(), order.getId());
-        order.getOrderItems().add(new OrderItem(order, itemToAdd, itemAdditionParameters.getAmount()));
-        orderDAO.update(order);
+        OrderItem orderItem = orderDAO.getOrderItem(order.getId(), itemAdditionParameters.getId());
+        if (orderItem != null) {
+            orderItem.setAmount(orderItem.getAmount() + itemAdditionParameters.getAmount());
+        } else {
+            order.getOrderItems().add(new OrderItem(order, itemToAdd, itemAdditionParameters.getAmount()));
+        }
+        commonDAO.update(order);
         logger.info(
                 "Updated order " + order.getId() + " added " + itemAdditionParameters.getAmount() + " " +
                         itemToAdd.getName() + " (itemId " + itemToAdd.getId() + ")"
@@ -78,7 +83,7 @@ public class OrderService {
             throw new RuntimeException("Cannot change state from " + oldStatus + " to " + newStatus + " for the order " + orderId);
         }
         order.setStatus(newStatus);
-        orderDAO.update(order);
+        commonDAO.update(order);
         logger.info("Updated state of order " + orderId + " from " + oldStatus + " to " + newStatus);
         if (newStatus.equals(Status.FAILED) || newStatus.equals(Status.CANCELLED)) {
             order.getOrderItems().forEach(
