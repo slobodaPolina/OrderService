@@ -21,7 +21,7 @@ public class MessagingService {
     }
 
     public static void callChangeAmount(long itemId, long amount) {
-        callItemService(itemId, amount, null, "changeAmount");
+        callItemService(itemId, amount, null, "changeItemAmount");
     }
 
     private static void callItemService(long itemId, long amount, Long orderId, String type) {
