@@ -20,7 +20,6 @@ public class MessagingService {
         callItemService(itemId, amount, null, "releaseItems");
     }
 
-// todo add the call somewhere
     public static void callChangeAmount(long itemId, long amount) {
         callItemService(itemId, amount, null, "changeAmount");
     }
@@ -76,6 +75,14 @@ public class MessagingService {
                         dto.getOrderId(),
                         dto.isPaymentSuccessful() ? Status.PAYED : Status.FAILED
                     );
+                    Order order = commonDAO.getById(dto.getOrderId(), Order.class);
+                    order.getOrderItems().forEach(orderItem -> {
+                        long itemId = orderItem.getId().getItem().getId();
+                        callRelease(itemId, orderItem.getAmount()); //anyway these items are not booked any more
+                        if (dto.isPaymentSuccessful()) {
+                            callChangeAmount(itemId, orderItem.getAmount() * (-1)); // if they were bought, they are not at warehouse
+                        }
+                    });
                 } finally {
                     channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
                 }
