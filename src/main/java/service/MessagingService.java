@@ -27,8 +27,12 @@ public class MessagingService {
         logger.warn("Calling ItemService with type " + type);
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("localhost");
-        try (Connection connection = factory.newConnection();
-                    Channel channel = connection.createChannel()) {
+        Connection connection;
+        Channel channel;
+        try {
+            connection = factory.newConnection();
+            channel = connection.createChannel();
+            
             channel.exchangeDeclare(type, "direct");
             JsonObject json = new JsonObject();
             json.addProperty("type", type);
@@ -56,8 +60,11 @@ public class MessagingService {
 
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("localhost");
-        try (Connection connection = factory.newConnection();
-                    Channel channel = connection.createChannel()) {
+        Connection connection;
+        Channel channel;
+        try {
+            connection = factory.newConnection();
+            channel = connection.createChannel();
 
             channel.exchangeDeclare(paymentExchangeName, "fanout");
             channel.exchangeDeclare(itemExchangeName, "fanout");
