@@ -89,14 +89,16 @@ public class MessagingService {
                         );
                         Order order = commonDAO.getById(dto.getOrderId(), Order.class);
                         logger.warn("got order with " + dto.getOrderId());
-                        order.getOrderItems().forEach(orderItem -> {
-                            long itemId = orderItem.getId().getItem().getId();
-                            logger.error("trying to release itemId " + itemId);
-                            callRelease(itemId, orderItem.getAmount()); //anyway these items are not booked any more
-                            if (dto.isPaymentSuccessful()) {
-                                callChangeAmount(itemId, orderItem.getAmount() * (-1)); // if they were bought, they are not at warehouse
-                            }
-                        });
+                        if (order.getOrderItems() != null) {
+                            order.getOrderItems().forEach(orderItem -> {
+                                long itemId = orderItem.getId().getItem().getId();
+                                logger.error("trying to release itemId " + itemId);
+                                callRelease(itemId, orderItem.getAmount()); //anyway these items are not booked any more
+                                if (dto.isPaymentSuccessful()) {
+                                    callChangeAmount(itemId, orderItem.getAmount() * (-1)); // if they were bought, they are not at warehouse
+                                }
+                            });
+                        }
                     }
                 } finally {
                     channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
