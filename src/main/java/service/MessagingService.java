@@ -100,8 +100,10 @@ public class MessagingService {
                             });
                         }
                     }
+                    logger.warn("finishing delivery callback");
                 } finally {
                     channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
+                    logger.warn("sended basicAck");
                 }
             };
 
