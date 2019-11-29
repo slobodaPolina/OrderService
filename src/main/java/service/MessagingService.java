@@ -32,7 +32,7 @@ public class MessagingService {
             channel.exchangeDeclare(type, "direct");
             JsonObject json = new JsonObject();
             json.addProperty("type", type);
-            json.addProperty("itemId", itemId);
+            json.addProperty("id", itemId);
             json.addProperty("amount", amount);
             if (orderId != null) {
                 json.addProperty("orderId", orderId);
