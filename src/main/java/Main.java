@@ -1,22 +1,22 @@
 import static spark.Spark.*;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.*;
 import dao.*;
 import dto.*;
-import entity.Status;
+import entity.*;
 import service.*;
 
 import java.util.stream.Collectors;
 
 public class Main {
-	private static OrderService orderService = new OrderService(new OrderDAO(), new CommonDAO());
+	private static MessagingService messagingService = new MessagingService();
+	private static OrderService orderService = new OrderService(new OrderDAO(), new CommonDAO(), messagingService);
 
 	private static GsonBuilder builder = new GsonBuilder();
 	private static Gson gson = builder.create();
 
     public static void main(String[] args) {
-		MessagingService.setupListener(orderService, new CommonDAO(), new OrderDAO());
+		messagingService.setupListener(orderService, new CommonDAO(), new OrderDAO());
 
     	port(1809);
 

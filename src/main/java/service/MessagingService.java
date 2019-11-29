@@ -11,19 +11,19 @@ import entity.*;
 public class MessagingService {
     private static final Logger logger = LoggerFactory.getLogger(MessagingService.class);
 
-    public static void callReserve(long itemId, long amount, long orderId) {
+    public void callReserve(long itemId, long amount, long orderId) {
         callItemService(itemId, amount, orderId, "reserveItems");
     }
 
-    public static void callRelease(long itemId, long amount) {
+    public void callRelease(long itemId, long amount) {
         callItemService(itemId, amount, null, "releaseItems");
     }
 
-    public static void callChangeAmount(long itemId, long amount) {
+    public void callChangeAmount(long itemId, long amount) {
         callItemService(itemId, amount, null, "changeItemAmount");
     }
 
-    private static void callItemService(long itemId, long amount, Long orderId, String type) {
+    private void callItemService(long itemId, long amount, Long orderId, String type) {
         logger.warn("Calling ItemService with type " + type);
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("localhost");
@@ -49,7 +49,7 @@ public class MessagingService {
         }
     }
 
-    public static void setupListener(OrderService orderService, CommonDAO commonDAO, OrderDAO orderDAO) {
+    public void setupListener(OrderService orderService, CommonDAO commonDAO, OrderDAO orderDAO) {
         String queueName = "OrderService";
         String paymentExchangeName = "paymentPerformed";
         String itemExchangeName = "reservationFailed";
@@ -87,24 +87,12 @@ public class MessagingService {
                             dto.getOrderId(),
                             dto.isPaymentSuccessful() ? Status.PAYED : Status.FAILED
                         );
-                        Order order = commonDAO.getById(dto.getOrderId(), Order.class);
-                        logger.warn("got order with " + dto.getOrderId());
-                        if (order.getOrderItems() != null) {
-                            order.getOrderItems().forEach(orderItem -> {
-                                long itemId = orderItem.getId().getItem().getId();
-                                logger.error("trying to release itemId " + itemId);
-                                callRelease(itemId, orderItem.getAmount()); //anyway these items are not booked any more
-                                if (dto.isPaymentSuccessful()) {
-                                    callChangeAmount(itemId, orderItem.getAmount() * (-1)); // if they were bought, they are not at warehouse
-                                }
-                            });
-                        }
                     }
                     logger.warn("finishing delivery callback");
                 } finally {
                     logger.warn("trying to send basicAck");
                     channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
-                    logger.warn("sended basicAck");
+                    logger.warn("sent basicAck");
                 }
             };
 
