@@ -1,9 +1,8 @@
 package service;
 
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 import com.rabbitmq.client.*;
 import org.slf4j.*;
-import com.google.gson.Gson;
 
 import dto.*;
 import dao.*;
@@ -67,45 +66,41 @@ public class MessagingService {
             channel.queueBind(queueName, paymentExchangeName, "");
             channel.queueBind(queueName, itemExchangeName, "");
 
-            DeliverCallback paymentCallback = (consumerTag, delivery) -> {
+            DeliverCallback callback = (consumerTag, delivery) -> {
                 try {
                     String message = new String(delivery.getBody(), "UTF-8");
-                    PayedOrderDTO dto = new Gson().fromJson(message, PayedOrderDTO.class);
-                    orderService.changeOrderStatus(
-                        dto.getOrderId(),
-                        dto.isPaymentSuccessful() ? Status.PAYED : Status.FAILED
-                    );
-                    Order order = commonDAO.getById(dto.getOrderId(), Order.class);
-                    order.getOrderItems().forEach(orderItem -> {
-                        long itemId = orderItem.getId().getItem().getId();
-                        callRelease(itemId, orderItem.getAmount()); //anyway these items are not booked any more
-                        if (dto.isPaymentSuccessful()) {
-                            callChangeAmount(itemId, orderItem.getAmount() * (-1)); // if they were bought, they are not at warehouse
-                        }
-                    });
+                    JsonParser parser = new JsonParser();
+                    JsonObject obj = parser.parse(message).getAsJsonObject();
+                    if (obj.get("type").getAsString().equals("reservationFailed")) {
+                        ReservationFailedDTO dto = new Gson().fromJson(message, ReservationFailedDTO.class);
+                        OrderItem orderItem = orderDAO.getOrderItem(dto.getOrderId(), dto.getItemId());
+                        orderItem.setAmount(orderItem.getAmount() - dto.getAmount());
+                        commonDAO.update(orderItem);
+                        logger.error(
+                                "Cannot reserve " + dto.getAmount() + " items with id " +
+                                    dto.getItemId() + " to order " + dto.getOrderId() + ". ItemService rejected the operation."
+                        );
+                    } else {
+                        PayedOrderDTO dto = new Gson().fromJson(message, PayedOrderDTO.class);
+                        orderService.changeOrderStatus(
+                            dto.getOrderId(),
+                            dto.isPaymentSuccessful() ? Status.PAYED : Status.FAILED
+                        );
+                        Order order = commonDAO.getById(dto.getOrderId(), Order.class);
+                        order.getOrderItems().forEach(orderItem -> {
+                            long itemId = orderItem.getId().getItem().getId();
+                            callRelease(itemId, orderItem.getAmount()); //anyway these items are not booked any more
+                            if (dto.isPaymentSuccessful()) {
+                                callChangeAmount(itemId, orderItem.getAmount() * (-1)); // if they were bought, they are not at warehouse
+                            }
+                        });
+                    }
                 } finally {
                     channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
                 }
             };
 
-            DeliverCallback itemCallback = (consumerTag, delivery) -> {
-                try {
-                    String message = new String(delivery.getBody(), "UTF-8");
-                    ReservationFailedDTO dto = new Gson().fromJson(message, ReservationFailedDTO.class);
-                    OrderItem orderItem = orderDAO.getOrderItem(dto.getOrderId(), dto.getItemId());
-                    orderItem.setAmount(orderItem.getAmount() - dto.getAmount());
-                    commonDAO.update(orderItem);
-                    logger.error(
-                            "Cannot reserve " + dto.getAmount() + " items with id " +
-                                dto.getItemId() + " to order " + dto.getOrderId() + ". ItemService rejected the operation."
-                    );
-                } finally {
-                    channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
-                }
-            };
-
-            channel.basicConsume(queueName, false, paymentCallback, consumerTag -> { });
-            channel.basicConsume(queueName, false, itemCallback, consumerTag -> { });
+            channel.basicConsume(queueName, false, callback, consumerTag -> { });
         } catch(Exception e) {
             logger.error("Failed to setupListener of orderService to listen to PaymentService events");
         }
