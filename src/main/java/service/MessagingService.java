@@ -24,6 +24,7 @@ public class MessagingService {
     }
 
     private static void callItemService(long itemId, long amount, Long orderId, String type) {
+        logger.warning("Calling ItemService with type " + type);
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("localhost");
         try (Connection connection = factory.newConnection();
@@ -87,8 +88,10 @@ public class MessagingService {
                             dto.isPaymentSuccessful() ? Status.PAYED : Status.FAILED
                         );
                         Order order = commonDAO.getById(dto.getOrderId(), Order.class);
+                        logger.warning("got order with " + dto.getOrderId());
                         order.getOrderItems().forEach(orderItem -> {
                             long itemId = orderItem.getId().getItem().getId();
+                            logger.error("trying to release itemId " + itemId);
                             callRelease(itemId, orderItem.getAmount()); //anyway these items are not booked any more
                             if (dto.isPaymentSuccessful()) {
                                 callChangeAmount(itemId, orderItem.getAmount() * (-1)); // if they were bought, they are not at warehouse
