@@ -82,12 +82,17 @@ public class MessagingService {
                     if (obj.get("type").getAsString().equals("reservationFailed")) {
                         ReservationFailedDTO dto = new Gson().fromJson(message, ReservationFailedDTO.class);
                         OrderItem orderItem = orderDAO.getOrderItem(dto.getOrderId(), dto.getItemId());
-                        orderItem.setAmount(orderItem.getAmount() - dto.getAmount());
-                        commonDAO.update(orderItem);
-                        logger.error(
-                                "Cannot reserve " + dto.getAmount() + " items with id " +
-                                    dto.getItemId() + " to order " + dto.getOrderId() + ". ItemService rejected the operation."
-                        );
+                        if (orderItem == null) {
+                            logger.error("Got reservation failed message of nonexistent combination of orderId " +
+                                    dto.getOrderId() + " and itemId " + dto.getItemId() + "! Seems like the reservation has not been performed before");
+                        } else {
+                            orderItem.setAmount(orderItem.getAmount() - dto.getAmount());
+                            commonDAO.update(orderItem);
+                            logger.error(
+                                    "Cannot reserve " + dto.getAmount() + " items with id " +
+                                            dto.getItemId() + " to order " + dto.getOrderId() + ". ItemService rejected the operation."
+                            );
+                        }
                     } else {
                         PayedOrderDTO dto = new Gson().fromJson(message, PayedOrderDTO.class);
                         orderService.changeOrderStatus(
