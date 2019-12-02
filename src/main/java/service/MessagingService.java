@@ -53,7 +53,7 @@ public class MessagingService {
         String queueName = "OrderService";
         String paymentExchangeName = "paymentPerformed";
         String reservationFailedExchangeName = "reservationFailed";
-        String itemAddedExchangeName = "itemAdded";
+        String itemAddedExchangeName = "itemAddedToWarehouse";
 
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("localhost");
