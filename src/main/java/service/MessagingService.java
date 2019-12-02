@@ -56,7 +56,8 @@ public class MessagingService {
     public void setupListener(OrderService orderService, CommonDAO commonDAO, OrderDAO orderDAO) {
         String queueName = "OrderService";
         String paymentExchangeName = "paymentPerformed";
-        String itemExchangeName = "reservationFailed";
+        String reservationFailedExchangeName = "reservationFailed";
+        String itemAddedExchangeName = "itemAdded";
 
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("localhost");
@@ -67,19 +68,21 @@ public class MessagingService {
             channel = connection.createChannel();
 
             channel.exchangeDeclare(paymentExchangeName, "fanout");
-            channel.exchangeDeclare(itemExchangeName, "fanout");
+            channel.exchangeDeclare(reservationFailedExchangeName, "fanout");
+            channel.exchangeDeclare(itemAddedExchangeName, "fanout");
 
             channel.queueDeclare(queueName, true, false, false, null);
 
             channel.queueBind(queueName, paymentExchangeName, "");
-            channel.queueBind(queueName, itemExchangeName, "");
+            channel.queueBind(queueName, reservationFailedExchangeName, "");
+            channel.queueBind(queueName, itemAddedExchangeName, "");
 
             DeliverCallback callback = (consumerTag, delivery) -> {
                 try {
                     String message = new String(delivery.getBody(), "UTF-8");
                     JsonParser parser = new JsonParser();
                     JsonObject obj = parser.parse(message).getAsJsonObject();
-                    if (obj.get("type").getAsString().equals("reservationFailed")) {
+                    if (obj.get("type").getAsString().equals(reservationFailedExchangeName)) {
                         ReservationFailedDTO dto = new Gson().fromJson(message, ReservationFailedDTO.class);
                         OrderItem orderItem = orderDAO.getOrderItem(dto.getOrderId(), dto.getItemId());
                         if (orderItem == null) {
@@ -93,6 +96,10 @@ public class MessagingService {
                                             dto.getItemId() + " to order " + dto.getOrderId() + ". ItemService rejected the operation."
                             );
                         }
+                    } else if (obj.get("type").getAsString().equals(itemAddedExchangeName)) {
+                        ItemDTO dto = new Gson().fromJson(message, ItemDTO.class);
+                        Item item = new Item(dto);
+                        commonDAO.save(item);
                     } else {
                         PayedOrderDTO dto = new Gson().fromJson(message, PayedOrderDTO.class);
                         orderService.changeOrderStatus(
