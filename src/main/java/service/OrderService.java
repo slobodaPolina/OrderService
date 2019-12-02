@@ -93,7 +93,7 @@ public class OrderService {
                     long itemId = orderItem.getId().getItem().getId();
                     messagingService.callRelease(itemId, orderItem.getAmount());
                     if (newStatus.equals(Status.PAYED)) {
-                        messagingService.eventItemBought(itemId, orderItem.getAmount());
+                        messagingService.callRemoveFromWarehouse(itemId, orderItem.getAmount());
                     }
                 }
             );

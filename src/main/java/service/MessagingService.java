@@ -12,15 +12,18 @@ public class MessagingService {
     private static final Logger logger = LoggerFactory.getLogger(MessagingService.class);
 
     public void callReserve(long itemId, long amount, long orderId) {
-        callItemService(itemId, amount, orderId, "reserveItems");
+        sendEvent(itemId, amount, orderId, "itemAddedToOrder");
     }
 
     public void callRelease(long itemId, long amount) {
-        callItemService(itemId, amount, null, "releaseItems");
+        sendEvent(itemId, amount, null, "itemRemovedFromOrder");
     }
 
-    private void callItemService(long itemId, long amount, Long orderId, String type) {
-        logger.warn("Calling ItemService with type " + type);
+    public void callRemoveFromWarehouse(long itemId, long amount) {
+        sendEvent(itemId,amount,null, "itemBought");
+    }
+
+    private void sendEvent(long itemId, long amount, Long orderId, String type) {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("localhost");
         Connection connection;
@@ -28,8 +31,8 @@ public class MessagingService {
         try {
             connection = factory.newConnection();
             channel = connection.createChannel();
-            
-            channel.exchangeDeclare(type, "direct");
+            channel.exchangeDeclare(type, "fanout");
+
             JsonObject json = new JsonObject();
             json.addProperty("type", type);
             json.addProperty("id", itemId);
@@ -39,38 +42,10 @@ public class MessagingService {
             }
             String message = json.toString();
 
-            channel.basicPublish(
-                type, "ItemService", MessageProperties.PERSISTENT_TEXT_PLAIN, message.getBytes("UTF-8")
-            );
-            logger.info("Called itemService " + message);
-        } catch(Exception e) {
-            logger.error("Failed to call item service with params type = " + type +
-                            ", itemId = " + itemId + ", amount = " + amount);
-        }
-    }
-
-    public void eventItemBought (long itemId, long amount) {
-        String exchangeName = "itemBought";
-        ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost("localhost");
-        Connection connection;
-        Channel channel;
-        try {
-            connection = factory.newConnection();
-            channel = connection.createChannel();
-            channel.exchangeDeclare(exchangeName, "fanout");
-
-            JsonObject json = new JsonObject();
-            json.addProperty("type", exchangeName);
-            json.addProperty("id", itemId);
-            json.addProperty("amount", amount);
-
-            String message = json.toString();
-
-            channel.basicPublish(exchangeName, "", MessageProperties.PERSISTENT_TEXT_PLAIN, message.getBytes("UTF-8"));
-            logger.info("OrderService have sent message '" + message + "'");
+            channel.basicPublish(type, "", MessageProperties.PERSISTENT_TEXT_PLAIN, message.getBytes("UTF-8"));
+            logger.info("OrderService have sent event '" + message + "'");
         } catch (Exception e) {
-            logger.error("Failed to send event itemBought with params id = " + itemId + ", amount = " + amount);
+            logger.error("OrderService failed to send event with itemId(id) " + itemId + " amount " + amount + " orderId " + orderId + " of type " + type);
         }
     }
 
