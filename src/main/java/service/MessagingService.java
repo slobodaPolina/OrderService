@@ -19,10 +19,6 @@ public class MessagingService {
         callItemService(itemId, amount, null, "releaseItems");
     }
 
-    public void callChangeAmount(long itemId, long amount) {
-        callItemService(itemId, amount, null, "changeItemAmount");
-    }
-
     private void callItemService(long itemId, long amount, Long orderId, String type) {
         logger.warn("Calling ItemService with type " + type);
         ConnectionFactory factory = new ConnectionFactory();
@@ -53,7 +49,32 @@ public class MessagingService {
         }
     }
 
-    public void setupListener(OrderService orderService, CommonDAO commonDAO, OrderDAO orderDAO) {
+    public void eventItemBought (long itemId, long amount) {
+        String exchangeName = "itemBought";
+        ConnectionFactory factory = new ConnectionFactory();
+        factory.setHost("localhost");
+        Connection connection;
+        Channel channel;
+        try {
+            connection = factory.newConnection();
+            channel = connection.createChannel();
+            channel.exchangeDeclare(exchangeName, "fanout");
+
+            JsonObject json = new JsonObject();
+            json.addProperty("type", exchangeName);
+            json.addProperty("id", itemId);
+            json.addProperty("amount", amount);
+
+            String message = json.toString();
+
+            channel.basicPublish(exchangeName, "", MessageProperties.PERSISTENT_TEXT_PLAIN, message.getBytes("UTF-8"));
+            logger.info("OrderService have sent message '" + message + "'");
+        } catch (Exception e) {
+            logger.error("Failed to send event itemBought with params id = " + itemId + ", amount = " + amount);
+        }
+    }
+
+        public void setupListener(OrderService orderService, CommonDAO commonDAO, OrderDAO orderDAO) {
         String queueName = "OrderService";
         String paymentExchangeName = "paymentPerformed";
         String reservationFailedExchangeName = "reservationFailed";
@@ -107,11 +128,10 @@ public class MessagingService {
                             dto.isPaymentSuccessful() ? Status.PAYED : Status.FAILED
                         );
                     }
-                    logger.warn("finishing delivery callback");
-                } finally {
-                    logger.warn("trying to send basicAck");
                     channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
-                    logger.warn("sent basicAck");
+                } catch (Exception e) {
+                    logger.error("Problems during delivery callback. Got the message but failed to deal with");
+                    e.printStackTrace();
                 }
             };
 

@@ -93,7 +93,7 @@ public class OrderService {
                     long itemId = orderItem.getId().getItem().getId();
                     messagingService.callRelease(itemId, orderItem.getAmount());
                     if (newStatus.equals(Status.PAYED)) {
-                        messagingService.callChangeAmount(itemId, orderItem.getAmount() * (-1)); // if they were bought, they are not at warehouse
+                        messagingService.eventItemBought(itemId, orderItem.getAmount());
                     }
                 }
             );
