@@ -10,10 +10,12 @@ public class OrderService {
     private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
     private OrderDAO orderDAO;
     private CommonDAO commonDAO;
+    private MessagingService messagingService;
 
-    public OrderService(OrderDAO orderDAO, CommonDAO commonDAO) {
+    public OrderService(OrderDAO orderDAO, CommonDAO commonDAO, MessagingService messagingService) {
         this.orderDAO = orderDAO;
         this.commonDAO = commonDAO;
+        this.messagingService = messagingService;
     }
 
     public List<OrderDTO> getOrders() {
@@ -56,7 +58,7 @@ public class OrderService {
             order = createEmptyOrder(itemAdditionParameters.getUsername());
         }
 
-        MessagingService.callReserve(itemAdditionParameters.getId(), itemAdditionParameters.getAmount(), order.getId());
+        messagingService.callReserve(itemAdditionParameters.getId(), itemAdditionParameters.getAmount(), order.getId());
         OrderItem orderItem = orderDAO.getOrderItem(order.getId(), itemAdditionParameters.getId());
         if (orderItem != null) {
             orderItem.setAmount(orderItem.getAmount() + itemAdditionParameters.getAmount());
@@ -85,9 +87,15 @@ public class OrderService {
         order.setStatus(newStatus);
         commonDAO.update(order);
         logger.info("Updated state of order " + orderId + " from " + oldStatus + " to " + newStatus);
-        if (newStatus.equals(Status.FAILED) || newStatus.equals(Status.CANCELLED)) {
+        if (newStatus.equals(Status.FAILED) || newStatus.equals(Status.CANCELLED) || newStatus.equals(Status.PAYED)) {
             order.getOrderItems().forEach(
-                orderItem -> MessagingService.callRelease(orderItem.getId().getItem().getId(), orderItem.getAmount())
+                orderItem -> {
+                    long itemId = orderItem.getId().getItem().getId();
+                    messagingService.callRelease(itemId, orderItem.getAmount());
+                    if (newStatus.equals(Status.PAYED)) {
+                        messagingService.callRemoveFromWarehouse(itemId, orderItem.getAmount());
+                    }
+                }
             );
         }
         return new OrderDTO(order);
