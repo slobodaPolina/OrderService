@@ -10,9 +10,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class OrderDAO {
+	SessionFactoryService sessionFactoryService = new SessionFactoryService();
+
 	public List<OrderDTO> getOrders() {
 		List<Order> orders = null;
-		try (Session session = SessionFactoryService.getSessionFactory().openSession()) {
+		try (Session session = sessionFactoryService.getSessionFactory().openSession()) {
 			session.beginTransaction();
 			CriteriaQuery<Order> query = session.getCriteriaBuilder().createQuery(Order.class);
 			query.from(Order.class);
@@ -26,7 +28,7 @@ public class OrderDAO {
 
 	public OrderItem getOrderItem(long orderId, long itemId) {
 		OrderItem orderItem = null;
-		try (Session session = SessionFactoryService.getSessionFactory().openSession()) {
+		try (Session session = sessionFactoryService.getSessionFactory().openSession()) {
 			session.beginTransaction();
 			CriteriaQuery<OrderItem> query = session.getCriteriaBuilder().createQuery(OrderItem.class);
 			Root<OrderItem> root = query.from(OrderItem.class);

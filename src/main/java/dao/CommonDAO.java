@@ -1,16 +1,18 @@
 package dao;
 
-import org.hibernate.Session;
-import service.SessionFactoryService;
+import service.*;
 
+import org.hibernate.Session;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.List;
 
 public class CommonDAO {
+    SessionFactoryService sessionFactoryService = new SessionFactoryService();
+
     public <T> T getById(long id, Class<T> clazz) {
         T t = null;
-        try (Session session = SessionFactoryService.getSessionFactory().openSession()) {
+        try (Session session = sessionFactoryService.getSessionFactory().openSession()) {
             session.beginTransaction();
             CriteriaQuery<T> query = session.getCriteriaBuilder().createQuery(clazz);
             Root<T> root = query.from(clazz);
@@ -25,7 +27,7 @@ public class CommonDAO {
     }
 
     public <T> void save(T obj) {
-        try (Session session = SessionFactoryService.getSessionFactory().openSession()) {
+        try (Session session = sessionFactoryService.getSessionFactory().openSession()) {
             session.beginTransaction();
             session.save(obj);
             session.getTransaction().commit();
@@ -35,7 +37,7 @@ public class CommonDAO {
     }
 
     public <T> void update(T obj) {
-        try (Session session = SessionFactoryService.getSessionFactory().openSession()) {
+        try (Session session = sessionFactoryService.getSessionFactory().openSession()) {
             session.beginTransaction();
             session.update(obj);
             session.getTransaction().commit();
@@ -45,7 +47,7 @@ public class CommonDAO {
     }
 
     public <T> void delete(T entity) {
-        try (Session session = SessionFactoryService.getSessionFactory().openSession()) {
+        try (Session session = sessionFactoryService.getSessionFactory().openSession()) {
             session.beginTransaction();
             session.delete(entity);
             session.getTransaction().commit();
