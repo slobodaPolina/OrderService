@@ -28,48 +28,56 @@ public class Main {
 					.collect(Collectors.toList())
 		);
 
-		post("/api/orders/:username", (req, res) ->
-			getJson(
-				new OrderDTO(
-					orderService.createEmptyOrder(req.params("username"))
-				)
-			)
-		);
+		post("/api/orders/:username", (req, res) -> {
+			try {
+				return gson.toJson(
+					new OrderDTO(
+						orderService.createEmptyOrder(req.params("username"))
+					)
+				);
+			} catch (IllegalArgumentException e) {
+				return gson.toJson(e.getMessage());
+			}
+		});
 
-		get("/api/orders/:orderId", (req, res) ->
-			getJson(
-				orderService.getOrderDTOById(
-					Long.parseLong(req.params("orderId"))
-				)
-			)
-		);
+		get("/api/orders/:orderId", (req, res) -> {
+			try {
+				return gson.toJson(
+					orderService.getOrderDTOById(
+						Long.parseLong(req.params("orderId"))
+					)
+				);
+			} catch (IllegalArgumentException e) {
+				return gson.toJson(e.getMessage());
+			}
+		});
 
-		put("/api/orders/:orderId/status/:status", (req, res) ->
-			getJson(
-				orderService.changeOrderStatus(
-					Long.parseLong(req.params("orderId")),
-					Status.valueOf(req.params("status"))
-				)
-			)
-		);
+		put("/api/orders/:orderId/status/:status", (req, res) -> {
+			try {
+				return gson.toJson(
+					orderService.changeOrderStatus(
+						Long.parseLong(req.params("orderId")),
+						Status.valueOf(req.params("status"))
+					)
+				);
+			} catch (IllegalArgumentException e) {
+				return gson.toJson(e.getMessage());
+			}
+		});
 
-		post("/api/orders/:orderId/item", (req, res) ->
-			getJson(
-				orderService.addItemToOrder(
-					parseLong(req.params("orderId")),
-					new Gson().fromJson(req.body(), ItemAdditionParametersDTO.class)
-				)
-			)
-		);
+		post("/api/orders/:orderId/item", (req, res) -> {
+			try {
+				return gson.toJson(
+					orderService.addItemToOrder(
+						parseLong(req.params("orderId")),
+						new Gson().fromJson(req.body(), ItemAdditionParametersDTO.class)
+					)
+				);
+			} catch (IllegalArgumentException e) {
+				return gson.toJson(e.getMessage());
+			}
+		});
     }
-
-	private static String getJson(OrderDTO dto) {
-    	try {
-    		return gson.toJson(dto);
-		} catch(IllegalArgumentException e) {
-    		return gson.toJson(e.getMessage());
-		}
-	}
 
 	private static Long parseLong(String s) {
 		if (s == null || s.equals("") || s.toLowerCase().equals("null")) {
