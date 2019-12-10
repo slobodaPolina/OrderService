@@ -29,7 +29,7 @@ public class Main {
 		);
 
 		post("/api/orders/:username", (req, res) ->
-			gson.toJson(
+			getJson(
 				new OrderDTO(
 					orderService.createEmptyOrder(req.params("username"))
 				)
@@ -37,7 +37,7 @@ public class Main {
 		);
 
 		get("/api/orders/:orderId", (req, res) ->
-			gson.toJson(
+			getJson(
 				orderService.getOrderDTOById(
 					Long.parseLong(req.params("orderId"))
 				)
@@ -45,7 +45,7 @@ public class Main {
 		);
 
 		put("/api/orders/:orderId/status/:status", (req, res) ->
-			gson.toJson(
+			getJson(
 				orderService.changeOrderStatus(
 					Long.parseLong(req.params("orderId")),
 					Status.valueOf(req.params("status"))
@@ -54,7 +54,7 @@ public class Main {
 		);
 
 		post("/api/orders/:orderId/item", (req, res) ->
-			gson.toJson(
+			getJson(
 				orderService.addItemToOrder(
 					parseLong(req.params("orderId")),
 					new Gson().fromJson(req.body(), ItemAdditionParametersDTO.class)
@@ -62,6 +62,14 @@ public class Main {
 			)
 		);
     }
+
+	private static String getJson(OrderDTO dto) {
+    	try {
+    		return gson.toJson(dto);
+		} catch(IllegalArgumentException e) {
+    		return gson.toJson(e.getMessage());
+		}
+	}
 
 	private static Long parseLong(String s) {
 		if (s == null || s.equals("") || s.toLowerCase().equals("null")) {

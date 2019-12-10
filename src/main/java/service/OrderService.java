@@ -29,7 +29,7 @@ public class OrderService {
         return order;
     }
 
-    public OrderDTO getOrderDTOById(long orderId) {
+    public OrderDTO getOrderDTOById(long orderId) throws IllegalArgumentException {
         Order order = commonDAO.getById(orderId, Order.class);
         if (order != null) {
             return new OrderDTO(order);
@@ -38,7 +38,7 @@ public class OrderService {
         throw new IllegalArgumentException("No order with orderId " + orderId + " found!");
     }
 
-    public OrderDTO addItemToOrder(Long orderId, ItemAdditionParametersDTO itemAdditionParameters) {
+    public OrderDTO addItemToOrder(Long orderId, ItemAdditionParametersDTO itemAdditionParameters) throws IllegalArgumentException {
         Item itemToAdd = commonDAO.getById(itemAdditionParameters.getId(), Item.class);
         if (itemToAdd == null) {
             logger.error("Cannot add items with id " + itemAdditionParameters.getId() + " - there is no item with such id!");
@@ -73,7 +73,7 @@ public class OrderService {
         return new OrderDTO(order);
     }
 
-    public OrderDTO changeOrderStatus(long orderId, Status newStatus) {
+    public OrderDTO changeOrderStatus(long orderId, Status newStatus) throws IllegalArgumentException {
         Order order = commonDAO.getById(orderId, Order.class);
         if (order == null) {
             logger.error("No order with orderId " + orderId + " found!");
@@ -82,7 +82,7 @@ public class OrderService {
         Status oldStatus = order.getStatus();
         if (!oldStatus.nextStatus().contains(newStatus)) {
             logger.error("Cannot change state from " + oldStatus + " to " + newStatus + " for the order " + orderId);
-            throw new RuntimeException("Cannot change state from " + oldStatus + " to " + newStatus + " for the order " + orderId);
+            throw new IllegalArgumentException("Cannot change state from " + oldStatus + " to " + newStatus + " for the order " + orderId);
         }
         order.setStatus(newStatus);
         commonDAO.update(order);
