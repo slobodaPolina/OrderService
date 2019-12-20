@@ -62,7 +62,7 @@ public class OrderService {
         OrderItem orderItem = orderDAO.getOrderItem(order.getId(), itemAdditionParameters.getId());
         if (orderItem != null) {
             orderItem.setAmount(orderItem.getAmount() + itemAdditionParameters.getAmount());
-            // Здесь ты поменяла свой orderItem, но в order его не добавила. Нужно удалить из order старый orderItem и добавить новый
+            commonDAO.update(orderItem);
         } else {
             order.getOrderItems().add(new OrderItem(order, itemToAdd, itemAdditionParameters.getAmount()));
         }
