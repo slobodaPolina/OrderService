@@ -25,7 +25,7 @@ public class MessagingService {
 
     private void sendEvent(long itemId, long amount, Long orderId, String type) {
         ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost("localhost");
+        factory.setHost("rabbitmq");
         Connection connection;
         Channel channel;
         try {
@@ -56,7 +56,7 @@ public class MessagingService {
         String itemAddedExchangeName = "itemAddedToWarehouse";
 
         ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost("localhost");
+        factory.setHost("rabbitmq");
         Connection connection;
         Channel channel;
         try {

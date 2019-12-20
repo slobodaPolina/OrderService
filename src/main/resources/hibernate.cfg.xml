@@ -6,7 +6,7 @@
     <session-factory>
         <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
 	    <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
-	    <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/orders</property>
+	    <property name="hibernate.connection.url">jdbc:postgresql://orderdb:5432/orders</property>
         <property name="hibernate.connection.username">example</property>
         <property name="hibernate.connection.password">example</property>
         <mapping resource="order.hbm.xml"/>
