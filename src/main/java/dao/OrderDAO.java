@@ -5,6 +5,7 @@ import entity.*;
 import org.hibernate.SessionFactory;
 import org.hibernate.Session;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Root;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -51,7 +52,11 @@ public class OrderDAO {
     public void updateOrderItemAmount(OrderItem orderItem, long newAmount) {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            orderItem.setAmount(newAmount);
+            CriteriaUpdate<OrderItem> query = session.getCriteriaBuilder().createCriteriaUpdate(OrderItem.class);
+            Root e = query.from(OrderItem.class);
+            query.set("amount", newAmount);
+            query.where(e.get("id").in(orderItem.getId()));
+            session.createQuery(query).executeUpdate();
             session.getTransaction().commit();
         } catch (Exception e) {
             e.printStackTrace();
