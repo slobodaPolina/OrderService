@@ -4,19 +4,22 @@ import com.google.gson.*;
 import dao.*;
 import dto.*;
 import entity.*;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
 import service.*;
 
 import java.util.stream.Collectors;
 
 public class Main {
 	private static MessagingService messagingService = new MessagingService();
-	private static OrderService orderService = new OrderService(new OrderDAO(), new CommonDAO(), messagingService);
+	private static SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
+	private static OrderService orderService = new OrderService(new OrderDAO(sessionFactory), new CommonDAO(sessionFactory), messagingService);
 
 	private static GsonBuilder builder = new GsonBuilder();
 	private static Gson gson = builder.create();
 
     public static void main(String[] args) {
-		messagingService.setupListener(orderService, new CommonDAO(), new OrderDAO());
+		messagingService.setupListener(orderService, new CommonDAO(sessionFactory), new OrderDAO(sessionFactory));
 
     	port(1809);
 

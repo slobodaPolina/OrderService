@@ -2,7 +2,7 @@ package dao;
 
 import dto.*;
 import entity.*;
-import service.*;
+import org.hibernate.SessionFactory;
 import org.hibernate.Session;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -10,11 +10,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class OrderDAO {
-	SessionFactoryService sessionFactoryService = new SessionFactoryService();
+    private SessionFactory sessionFactory;
+    public OrderDAO(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
+    }
 
 	public List<OrderDTO> getOrders() {
 		List<Order> orders = null;
-		try (Session session = sessionFactoryService.getSessionFactory().openSession()) {
+		try (Session session = sessionFactory.openSession()) {
 			session.beginTransaction();
 			CriteriaQuery<Order> query = session.getCriteriaBuilder().createQuery(Order.class);
 			query.from(Order.class);
@@ -28,7 +31,7 @@ public class OrderDAO {
 
 	public OrderItem getOrderItem(long orderId, long itemId) {
 		OrderItem orderItem = null;
-		try (Session session = sessionFactoryService.getSessionFactory().openSession()) {
+		try (Session session = sessionFactory.openSession()) {
 			session.beginTransaction();
 			CriteriaQuery<OrderItem> query = session.getCriteriaBuilder().createQuery(OrderItem.class);
 			Root<OrderItem> root = query.from(OrderItem.class);
