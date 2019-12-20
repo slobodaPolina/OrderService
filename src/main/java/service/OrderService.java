@@ -61,12 +61,11 @@ public class OrderService {
         messagingService.callReserve(itemAdditionParameters.getId(), itemAdditionParameters.getAmount(), order.getId());
         OrderItem orderItem = orderDAO.getOrderItem(order.getId(), itemAdditionParameters.getId());
         if (orderItem != null) {
-            orderItem.setAmount(orderItem.getAmount() + itemAdditionParameters.getAmount());
-            commonDAO.update(orderItem);
+            orderDAO.updateOrderItemAmount(orderItem, orderItem.getAmount() + itemAdditionParameters.getAmount());
         } else {
             order.getOrderItems().add(new OrderItem(order, itemToAdd, itemAdditionParameters.getAmount()));
+            commonDAO.update(order);
         }
-        commonDAO.update(order);
         logger.info(
                 "Updated order " + order.getId() + " added " + itemAdditionParameters.getAmount() + " " +
                         itemToAdd.getName() + " (itemId " + itemToAdd.getId() + ")"

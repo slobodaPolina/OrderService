@@ -47,4 +47,14 @@ public class OrderDAO {
 		}
 		return orderItem;
 	}
+
+    public void updateOrderItemAmount(OrderItem orderItem, long newAmount) {
+        try (Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            orderItem.setAmount(newAmount);
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
